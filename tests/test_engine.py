@@ -5,6 +5,7 @@ import unittest
 
 from stratum import Stratum, StratumError
 from stratum.manifest import Manifest
+from stratum.util import MISSING, write_all
 from stratum.wal import WAL
 
 
@@ -315,6 +316,46 @@ class LifecycleTest(EngineTestCase):
         self.assertEqual(stats["tables"][0]["entries"], 1)
         self.assertEqual(stats["disk_bytes"], stats["tables"][0]["bytes"])
         self.assertEqual(stats["flushes"], 1)
+
+
+class BackgroundFailureTest(EngineTestCase):
+    def test_background_error_is_reported_to_writers(self):
+        db = self.open(memtable_bytes=1000, compaction_min_tables=2)
+
+        def broken(full):
+            raise OSError("disk on fire")
+
+        db._compact_once = broken
+        with self.assertRaisesRegex(StratumError, "background compaction failed"):
+            for i in range(500):
+                db.put(b"key%03d" % i, b"x" * 50)
+        # reads still work, and nothing that was acknowledged is lost
+        self.assertEqual(db.get(b"key000"), b"x" * 50)
+
+
+class UtilTest(unittest.TestCase):
+    def test_missing_sentinel(self):
+        self.assertEqual(repr(MISSING), "MISSING")
+        self.assertFalse(MISSING)
+
+    def test_write_all_handles_partial_writes(self):
+        read_fd, write_fd = os.pipe()
+        self.addCleanup(os.close, read_fd)
+        real_write = os.write
+        calls = []
+
+        def stingy_write(fd, data):  # writes at most 3 bytes per call
+            calls.append(len(data))
+            return real_write(fd, bytes(data[:3]))
+
+        os.write = stingy_write
+        try:
+            write_all(write_fd, b"0123456789")
+        finally:
+            os.write = real_write
+            os.close(write_fd)
+        self.assertEqual(os.read(read_fd, 100), b"0123456789")
+        self.assertEqual(calls, [10, 7, 4, 1])
 
 
 if __name__ == "__main__":
