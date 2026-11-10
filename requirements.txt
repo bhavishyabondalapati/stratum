@@ -1,0 +1,3 @@
+# Stratum uses ONLY the Python standard library (Python 3.10+).
+# There is nothing to install. This file exists so tooling that expects
+# a requirements.txt keeps working.

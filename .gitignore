@@ -1,0 +1,15 @@
+# Secrets and local config
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Stratum data directories and scratch output
+data/
+bench_data/
+*.tmp
