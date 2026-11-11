@@ -187,7 +187,9 @@ stratum/
 ├── DECISIONS.md             Design decisions and the alternatives not taken
 ├── README.md                This file
 ├── requirements.txt         Intentionally empty (standard library only)
-└── .gitignore               Ignores .env, caches, data directories
+├── LICENSE                  MIT license
+├── .env.example             Placeholder only: Stratum needs no secrets
+└── .gitignore               Ignores .env, virtual environments, caches, logs, data directories
 ```
 
 ## Setup
@@ -346,7 +348,7 @@ In this order, each step with its own tests and commit:
 
 ## Key concepts
 
-Things worth being able to explain after reading this code:
+The ideas this code implements:
 
 - **LSM tree.** Turn random writes into sequential ones: buffer in memory,
   flush sorted runs to disk, merge them later. Writes are cheap; reads and
@@ -392,3 +394,7 @@ Things worth being able to explain after reading this code:
 - `kill -9` safety is tested; power-loss safety relies on `fsync`, which on
   macOS does not force the drive cache to flush.
 - The server has no authentication or TLS; keep it on localhost.
+
+## License
+
+[MIT](LICENSE). Copyright (c) 2026 Bhavishya Bondalapati.

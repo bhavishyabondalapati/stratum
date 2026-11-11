@@ -1,6 +1,6 @@
 # Design decisions
 
-Choices I made where the brief left room, and why. Each one lists the
+Design choices and why I made them. Each one lists the
 alternative I did not take, so the trade-off is visible.
 
 ## Scope and environment
@@ -8,8 +8,8 @@ alternative I did not take, so the trade-off is visible.
 1. **Standard library only, Python 3.10+.** No pip installs. Developed and
    tested on Python 3.12 (conda env `stratum`), macOS on Apple Silicon.
    `requirements.txt` exists but is intentionally empty.
-2. **`unittest`, not pytest.** The brief asks for `unittest` and "no pip
-   installs"; pytest would be a dependency. (`pytest` can still run the
+2. **`unittest`, not pytest.** The project is standard library only, and
+   pytest would be a dependency. (`pytest` can still run the
    suite unchanged if you have it.)
 3. **POSIX only.** The engine uses `os.pread`, `fcntl.flock`, directory
    `fsync` and "an unlinked file stays readable while it is open". None of
@@ -147,7 +147,7 @@ alternative I did not take, so the trade-off is visible.
     for `start <= key < end`; an empty string means "no bound"; the
     default limit is 1000 and the maximum 100,000. `RANGE` is an alias.
     The client's `scan_iter` pages through large ranges.
-28. **Extra commands beyond the brief:** `EXISTS`, `ECHO`, `INFO`, `QUIT`,
+28. **Extra commands beyond the core set:** `EXISTS`, `ECHO`, `INFO`, `QUIT`,
     and a stub `COMMAND` (so `redis-cli` can connect). Inline commands
     (plain text lines) are accepted so `nc`/`telnet` work.
 29. **`DEL` returns how many keys existed**, like Redis. That needs a read
