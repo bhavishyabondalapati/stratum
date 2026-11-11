@@ -13,3 +13,12 @@ __pycache__/
 data/
 bench_data/
 *.tmp
+
+# Virtual environments, logs and tool caches
+.venv/
+*.log
+.pytest_cache/
+.coverage
+htmlcov/
+.env.*
+!.env.example
